@@ -5,6 +5,7 @@ import Principal from "./Principal";
 import Consultas from "./Consultas";
 import Explorar from "./Explorar";
 import Perfil from "./Perfil";
+import React from "react";
 
 const Tab = createBottomTabNavigator()
 

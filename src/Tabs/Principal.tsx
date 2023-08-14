@@ -4,6 +4,7 @@ import { Botao } from "../componentes/Botao";
 import { EntradaTexto } from "../componentes/EntradaTexto";
 import { Titulo } from "../componentes/Titulo";
 import { depoimentos } from "../utils/mock";
+import React from "react";
 
 
 export default function Principal(){

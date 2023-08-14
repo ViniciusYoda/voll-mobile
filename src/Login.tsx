@@ -6,48 +6,54 @@ import { EntradaTexto } from './componentes/EntradaTexto';
 import { Titulo } from './componentes/Titulo';
 import { useEffect, useState } from 'react';
 import { fazerLogin } from './servicos/AutenticacaoServico';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
+import { NavigationProps } from './@types/navigation';
 import React from 'react';
 
-export default function Login({ navigation } : any ) {
+export default function Login({ navigation } : NavigationProps<'Login'>) {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [carregando, setCarregando] = useState(true)
   const toast = useToast()
 
   useEffect(() => {
-    AsyncStorage.removeItem('token')
-    async function verificarLogin() {
+    async function verificarLogin(){
       const token = await AsyncStorage.getItem('token')
-      if (token) {
+      if(token){
         navigation.replace('Tabs')
       }
       setCarregando(false)
     }
     verificarLogin()
-  }, [])
+  },[])
 
-  async function login() {
+  interface TokenProps {
+    token: string;
+    id: string;
+  }
+
+  async function login(){
     const resultado = await fazerLogin(email, senha)
-    if(resultado) {
+    if(resultado){
       const { token } = resultado
       AsyncStorage.setItem('token', token)
-      const tokenDecodificado = jwtDecode(token) as any
-      const pacienteId = tokenDecodificado.id 
+
+      const tokenDecodificado = jwtDecode(token) as TokenProps
+      const pacienteId = tokenDecodificado.id
       AsyncStorage.setItem('pacienteId', pacienteId)
       navigation.replace('Tabs')
     }
-    else {
+    else{
       toast.show({
-        title: 'Erro no login',
-        description: 'O email ou senha não conferem',
-        backgroundColor: 'red.500'
+        title: "Erro no login",
+        description: "O email ou senha não conferem",
+        backgroundColor: "red.500"
       })
     }
   }
 
-  if(carregando) {
+  if(carregando){
     return null
   }
 

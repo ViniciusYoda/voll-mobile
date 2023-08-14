@@ -1,29 +1,31 @@
 import { VStack, Text, ScrollView, Avatar, Divider } from 'native-base'
 import { Titulo } from '../componentes/Titulo'
-import { pegarDadosPaciente } from '../servicos/PacienteServico'
 import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React from 'react'
+import { pegarDadosPaciente } from '../servicos/PacienteServico'
 import { Paciente } from '../interfaces/Paciente'
 import { Botao } from '../componentes/Botao'
+import { NavigationProps } from '../@types/navigation'
+import React from 'react'
 
-export default function Perfil({navigation}: any){
+export default function Perfil({ navigation } : NavigationProps<'Perfil'>){
   const [dadosPaciente, setDadosPaciente] = useState({} as Paciente)
 
   useEffect(() => {
-    async function dadosPaciente() {
-      const pacienteId = await AsyncStorage.getItem('pacienteID')
-      if (!pacienteId) return null
+    async function dadosPaciente(){
+      const pacienteId = await AsyncStorage.getItem('pacienteId')
+      if(!pacienteId) return null
 
       const resultado = await pegarDadosPaciente(pacienteId)
-      if (resultado) {
+      if(resultado){
         setDadosPaciente(resultado)
+        console.log(resultado)
       }
     }
     dadosPaciente()
-  }, [])
+  },[])
 
-  function deslogar() {
+  function deslogar(){
     AsyncStorage.removeItem('token')
     AsyncStorage.removeItem('pacienteId')
     navigation.replace('Login')
@@ -34,7 +36,7 @@ export default function Perfil({navigation}: any){
       <VStack flex={1} alignItems="center" p={5}>
         <Titulo color="blue.500">Meu Perfil</Titulo>
 
-        <Avatar size="xl" source={{ uri: "https://github.com/andreocunha.png" }} mt={5} />
+        <Avatar size="xl" source={{ uri: dadosPaciente?.imagem }} mt={5} />
 
         <Titulo color="blue.500">Informações pessoais</Titulo>
         <Titulo fontSize="lg" mb={1}>{dadosPaciente.nome}</Titulo>
@@ -45,13 +47,14 @@ export default function Perfil({navigation}: any){
 
         <Titulo color="blue.500" mb={1}>Planos de saúde</Titulo>
         {
-          dadosPaciente.planosSaude?.map((plano, index) => {
+          dadosPaciente?.planosSaude?.map((plano, index) => (
             <Text key={index}>{plano}</Text>
-          })
+          ))
         }
+
         <Botao onPress={deslogar}>
           Deslogar
-          </Botao>
+        </Botao>
       </VStack>
     </ScrollView>
   )
